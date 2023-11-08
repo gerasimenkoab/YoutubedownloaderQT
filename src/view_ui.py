@@ -1,7 +1,9 @@
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QWidget, QTextEdit
+from PyQt5.QtWebEngineWidgets import QWebEngineView  # Import QWebEngineView
+from PyQt5.QtCore import QUrl  # Import QUrl
 
-
-class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(640, 220)
@@ -32,6 +34,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.urlLabel.sizePolicy().hasHeightForWidth())
+
         self.urlLabel.setSizePolicy(sizePolicy)
         self.urlLabel.setMaximumSize(QtCore.QSize(20, 30))
         self.urlLabel.setObjectName("urlLabel")
@@ -39,27 +42,37 @@ class Ui_MainWindow(object):
         self.urlText = QtWidgets.QLineEdit(parent=self.gridLayoutWidget)
         self.urlText.setObjectName("urlText")
         self.gridLayout.addWidget(self.urlText, 0, 1, 1, 1)
+
         self.loadProgressBar = QtWidgets.QProgressBar(parent=self.mainWidget)
         self.loadProgressBar.setGeometry(QtCore.QRect(10, 180, 611, 16))
         self.loadProgressBar.setProperty("value", 0)
         self.loadProgressBar.setObjectName("loadProgressBar")
+
         self.buttonsFrame = QtWidgets.QFrame(parent=self.mainWidget)
         self.buttonsFrame.setGeometry(QtCore.QRect(530, 0, 111, 171))
         self.buttonsFrame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.buttonsFrame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.buttonsFrame.setObjectName("buttonsFrame")
+
         self.verticalLayoutWidget = QtWidgets.QWidget(parent=self.buttonsFrame)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 101, 171))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(2, 2, 2, 2)
         self.verticalLayout.setObjectName("verticalLayout")
+
         self.getInfoButton = QtWidgets.QPushButton(parent=self.verticalLayoutWidget)
         self.getInfoButton.setObjectName("getInfoButton")
         self.verticalLayout.addWidget(self.getInfoButton)
+
+        self.preview_button = QtWidgets.QPushButton(parent=self.verticalLayoutWidget)
+        self.preview_button.setObjectName("Preview")
+        self.verticalLayout.addWidget(self.preview_button)
+
         self.downloadButton = QtWidgets.QPushButton(parent=self.verticalLayoutWidget)
         self.downloadButton.setObjectName("downloadButton")
         self.verticalLayout.addWidget(self.downloadButton)
+
         self.closeButton = QtWidgets.QPushButton(parent=self.verticalLayoutWidget)
         self.closeButton.setObjectName("closeButton")
         self.verticalLayout.addWidget(self.closeButton)
@@ -77,6 +90,7 @@ class Ui_MainWindow(object):
         self.optionsListLabel.setText(_translate("MainWindow", "Options:"))
         self.urlLabel.setText(_translate("MainWindow", "URL:"))
         self.getInfoButton.setText(_translate("MainWindow", "Get URL Info"))
+        self.preview_button.setText( _translate("MainWindow", "Preview"))
         self.downloadButton.setText(_translate("MainWindow", "Download"))
         self.closeButton.setText(_translate("MainWindow", "Close"))
 
@@ -95,3 +109,26 @@ class ViewUI(Ui_MainWindow):
 
     def SaveAsDialog(self):
         return QtWidgets.QFileDialog.getSaveFileName( )
+    
+
+class PreviewWindow(QMainWindow):
+    def __init__(self, url):
+        super().__init__()
+        self.url = url
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("YouTube Video Preview")
+        self.setGeometry(200, 200, 640, 360)
+        
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+
+        self.layout = QVBoxLayout(self.central_widget)
+
+        self.web_view = QWebEngineView()
+        self.layout.addWidget(self.web_view)
+
+        self.web_view.setUrl(QUrl(self.url))
+
+

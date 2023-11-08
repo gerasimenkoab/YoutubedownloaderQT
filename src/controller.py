@@ -1,25 +1,31 @@
-from PyQt6 import QtCore, QtGui, QtWidgets
+#from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow
 import validators # for URL text validation
 import re
 import sys
 
 from pytube.exceptions import VideoUnavailable
 from .model import ModelActions
-from .view_ui import ViewUI
+from .view_ui import ViewUI, PreviewWindow
 
 
 class ControllerMain():
-    def __init__(self, app_main = None):
-        if app_main is None:
-            self.app = QtWidgets.QApplication(sys.argv)
-            self.app.setStyle('Fusion')
-        else:
-            self.app = app_main
+    # def __init__(self, app_main = None):
+    #     if app_main is None:
+    #         self.app = QApplication(sys.argv)
+    #         self.app.setStyle('Fusion')
+    #         self.view.ShowStatusbarInfo('QApp created. Style Fusion')
+
+    #     else:
+    #         self.app = app_main
 
 
     def Run(self):
-        MainWindow = QtWidgets.QMainWindow()
+        self.app = QApplication(sys.argv)
+        self.app.setStyle('Fusion')
+        MainWindow = QMainWindow()
         self.view = ViewUI(MainWindow)
+        self.view.ShowStatusbarInfo('QApp created. Style Fusion')
         MainWindow.show()
         self.model = ModelActions()
         self.BindActions()
@@ -29,7 +35,16 @@ class ControllerMain():
     def BindActions(self):
         self.view.getInfoButton.clicked.connect(self.GetInfo)
         self.view.downloadButton.clicked.connect(self.DownloadFile)
+        self.view.preview_button.clicked.connect(self.open_preview_window)
         self.view.closeButton.clicked.connect(self.CloseApp)
+
+    def open_preview_window(self):
+        url = self.view.urlText.text()#self.url_input.toPlainText().strip()
+        if not url:
+            return
+
+        self.preview_window = PreviewWindow(url)
+        self.preview_window.show()
 
     def GetInfo(self):
         try:
