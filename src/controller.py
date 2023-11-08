@@ -58,9 +58,19 @@ class ControllerMain():
         ### itag="([0-9]+)"    or   itag="(.*?)"   regex
         selectedTag = re.search( r'itag="([0-9]+)"' , selectedStream).group(1)
         stream  = self.model.GetStream(selectedTag)
+        self.model.yt.register_on_progress_callback( self.update_progress )
         dirPAth = self.view.SaveAsDialog()
         if dirPAth:
-            stream.download(output_path=dirPAth[0] )
+            pathSplit = dirPAth[0].rsplit('/',1)
+            print("dirPath:",dirPAth, ' pathSplit: ', pathSplit)
+            stream.download(output_path= pathSplit[0], filename=pathSplit[1] )
+
+    def update_progress(self, stream, chunk, bytes_remaining):
+        total_size = stream.filesize
+        bytes_downloaded = total_size - bytes_remaining
+        download_percentage = int(bytes_downloaded / total_size * 100)
+        self.view.loadProgressBar.setValue(download_percentage)
+
 
     def CloseApp(self):
         self.app.quit()
