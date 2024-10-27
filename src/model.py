@@ -7,7 +7,10 @@ class ModelActions():
         self.yt = None
 
     def GetInfoFromURL(self, url_link):
-        self.yt = YouTube(url_link)
+        try:
+            self.yt = YouTube(url_link)
+        except VideoUnavailable:
+            raise VideoUnavailable
 
     def GetStream(self, selectedTag):
         return self.yt.streams.get_by_itag(itag = selectedTag)
